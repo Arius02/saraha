@@ -5,8 +5,9 @@ dotenv.config();
 const uri = process.env.DATA_BASE_URL;
 
 export const connectionDB = async () => {
+  console.log(uri)
   return await mongoose
-    .connect("mongodb://127.0.0.1:27017/saraha", { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
       console.log('Connected to MongoDB successfully!');
     })
