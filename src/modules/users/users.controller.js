@@ -9,7 +9,6 @@ import cloudinary from "../../utils/cloudinaryConfiguration.js";
 
 const signUp = errorHandler(async (req, res, next) => {
   // Extract password, confirmPassword, and other user data from the request body
- try {
   const { password, cPassword, email ,username} = req.body;
   // Hash the password using the specified salt rounds
   const hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALT_ROUNDS));
@@ -21,7 +20,7 @@ const signUp = errorHandler(async (req, res, next) => {
   const token = jwt.sign(email,process.env.CONFIRMATION_TOKEN_SECRET_KEY);
 
   // Send an email to the user with the confirmation token
-  const confirmationLink = `${req.protocol}://${req.header.host}/users/confirmEmail/${token}`;
+  const confirmationLink = `${req.protocol}://${req.headers.host}/users/confirmEmail/${token}`;
 
   const confirmationMessage = message(confirmationLink);
 
@@ -39,9 +38,6 @@ const signUp = errorHandler(async (req, res, next) => {
   await usersModel.create({ ...req.body, password: hashedPassword, profilePicture:{secure_url,public_id}});
   // Return a success response if the user was created successfully
   return res.status(201).json({ message: "User created successfully.", status:true });
- } catch (error) {
-  res.json(error)
- }
 });
 
 //confirm email
