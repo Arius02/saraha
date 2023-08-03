@@ -5,7 +5,6 @@ dotenv.config();
 const uri = process.env.DATA_BASE_URL;
 
 export const connectionDB = async () => {
-  console.log(uri)
   return await mongoose
     .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
