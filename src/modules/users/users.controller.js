@@ -24,19 +24,25 @@ const signUp = errorHandler(async (req, res, next) => {
 
   const confirmationMessage = message(confirmationLink);
 
-  await sendEmail({to:email, subject:"Confirmation Email", html:confirmationMessage});
 
   // Create a new user with the provided user data and hashed password
-  const {secure_url,public_id }= await cloudinary.uploader.upload(
-    req.file.path,
-    {
-      folder:`users/${username}`,
-      use_filename:true
-    
-  });
+
   
-  await usersModel.create({ ...req.body, password: hashedPassword, profilePicture:{secure_url,public_id}});
+  const user= await usersModel.create({ ...req.body, password: hashedPassword});
   // Return a success response if the user was created successfully
+  if(user){
+ await sendEmail({to:email, subject:"Confirmation Email", html:confirmationMessage});
+
+    const {secure_url,public_id }= await cloudinary.uploader.upload(
+      req.file.path,
+      {
+        folder:`users/${user._id}`,
+        use_filename:true
+      
+    });
+    user.profilePicture = {secure_url,public_id }
+    await user.save()
+  }
   return res.status(201).json({ message: "User created successfully.", status:true });
 });
 
@@ -112,16 +118,63 @@ const changePassword = (async (req, res, next) => {
 });
 
 // update 
-const updateUser = errorHandler(async(req, res, next)=>{
-  
-    const {_id}= req.userData
-    console.log(req.body)
-    if(!Object.keys(req.body).length){
-  return res.status(400).json({ message: 'Please send data that shloud be updated.',  status: false });
+const updateUser = (async(req, res, next)=>{
+  const {_id}= req.userData;
+  const user= await usersModel.findById(_id)
+
+    if(req.body.username){
+      if(user.username === req.body.username){
+        return next(
+          new Error('please enter different username from the old  username', {
+            cause: 400,
+          }),
+        )
+      }
+      if (await usersModel.findOne({ username:req.body.username })) {
+        return next(
+          new Error('username is already exist.', {
+            cause: 400,
+          }),
+        )
+      }
+      // user.username= req.body.username
+  }
+   if(req.body.email){
+    if(user.email === req.body.email){
+      return next(
+        new Error('please enter different email from the old email.', {
+          cause: 400,
+        }),
+      )
     }
-    const updatedUser= await usersModel.findByIdAndUpdate(_id,{
-      ...req.body
-    },{new:true})
+    if (await usersModel.findOne({ email:req.body.email })) {
+      return next(
+        new Error('email is already exist.', {
+          cause: 400,
+        }),
+      )
+    }
+    // user.email= req.body.email
+
+}
+if (req.file) {
+  // delete the old  image
+  await cloudinary.uploader.destroy(user.profilePicture.public_id)
+
+  // upload the new  image
+  const { secure_url, public_id } = await cloudinary.uploader.upload(
+    req.file.path,
+    {
+      folder: `users/${user._id}`,
+    },
+  )
+  // db
+  user.profilePicture = { secure_url, public_id }
+  await user.save()
+  }
+const updatedUser = await usersModel.findByIdAndUpdate(_id,{
+  ...req.body
+},{new:true})
   return res.status(200).json({ message: 'User updated successfully.', user: updatedUser, status: true });
 });
 
@@ -129,6 +182,9 @@ const updateUser = errorHandler(async(req, res, next)=>{
 const deleteUser = errorHandler(async(req, res, next)=>{
     const {_id}= req.userData
     const user=await usersModel.findByIdAndDelete(_id)
+  await cloudinary.api.delete_resources_by_prefix(user.profilePicture.public_id)
+  await cloudinary.api.delete_folder(`users/${_id}`)
+    
     return res.status(200).json({ message: 'User deleted successfully.' , status:true });
 })
 

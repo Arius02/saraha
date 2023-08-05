@@ -11,7 +11,7 @@ router.post("/sign-up", upload(extensions.image).single("profile-picture"),valid
 router.patch("/confirmEmail/:token", confirmEmail)
 router.get("/sign-in", validationGate(signInSchema),signIn)
 router.patch("/change-password",userAuth , validationGate(changePassSchema),changePassword)
-router.put("/", userAuth , validationGate(updateSchema),updateUser)
+router.put("/", userAuth , upload(extensions.image).single("profile-picture") ,validationGate(updateSchema),updateUser)
 router.delete("/", userAuth,deleteUser)
 router.patch("/logout", userAuth, logOut)
 

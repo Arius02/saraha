@@ -2,10 +2,7 @@ const reqMethods = ['body', 'query', 'params', 'headers', 'file']
 
 export const validationGate = (schema) => {
   return (req, res, next) => {
-    // req
-    if(typeof req.body.data !== "object" && req.body.data !== undefined){
-        req.body = JSON.parse(req.body.data)
-    }
+
     const validationErrorArr = []
     for (const key of reqMethods) {
       if (schema[key]) {
