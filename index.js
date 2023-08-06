@@ -3,13 +3,14 @@ import express, { json } from 'express'
 import {  connectionDB } from './DB/DBConnection.js'
 import userRouter from './src/modules/users/users.routes.js'
 import messageRouter from './src/modules/messages/messages.routes.js'
+import cors from "cors"
 
 const app = express()
 const port = process.env.PORT || 3000;
 
 dotenv.config()
 connectionDB()
-
+app.use(cors({ origin: '*' }));
 app.use(json())
 app.use("/users",userRouter)
 app.use("/messages",messageRouter)
