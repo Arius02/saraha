@@ -8,6 +8,7 @@ import { message } from "../../utils/confirmationMessage.js";
 import cloudinary from "../../utils/cloudinaryConfiguration.js";
 
 const signUp = errorHandler(async (req, res, next) => {
+  console.log(req.body,req.file)
   // Extract password, confirmPassword, and other user data from the request body
   const { password, cPassword, email ,username} = req.body;
   // Hash the password using the specified salt rounds
@@ -92,7 +93,7 @@ const signIn = errorHandler(async (req, res, next) => {
 
 
 // change password(user must be logged in)
-const changePassword = (async (req, res, next) => {
+const changePassword = errorHandler(async (req, res, next) => {
   const { oldPassword, newPassword, cPassword } = req.body;
   if(!Object.keys(req.body).length){
     return res.status(400).json({ message: 'Please send data that shloud be updated.',  status: false });
@@ -118,7 +119,7 @@ const changePassword = (async (req, res, next) => {
 });
 
 // update 
-const updateUser = (async(req, res, next)=>{
+const updateUser = errorHandler(async(req, res, next)=>{
   const {_id}= req.userData;
   const user= await usersModel.findById(_id)
 

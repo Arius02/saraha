@@ -7,7 +7,7 @@ import { changePassSchema, signInSchema, signUpSchema, updateSchema } from '../.
 
 const router = Router()
 
-router.post("/sign-up", upload(extensions.image).single("profile-picture"),validationGate(signUpSchema),signUp)
+router.post("/sign-up", upload(extensions.image).single("profilePicture"),validationGate(signUpSchema),signUp)
 router.patch("/confirmEmail/:token", confirmEmail)
 router.get("/sign-in", validationGate(signInSchema),signIn)
 router.patch("/change-password",userAuth , validationGate(changePassSchema),changePassword)

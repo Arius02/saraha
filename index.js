@@ -6,11 +6,11 @@ import messageRouter from './src/modules/messages/messages.routes.js'
 import cors from "cors"
 
 const app = express()
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3090;
 
 dotenv.config()
 connectionDB()
-app.use(cors({ origin: '*' }));
+app.use(cors());
 app.use(json())
 app.use("/users",userRouter)
 app.use("/messages",messageRouter)
