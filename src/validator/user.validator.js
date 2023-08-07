@@ -44,11 +44,10 @@ export const signUpSchema = {
 export const signInSchema = {
   body: Joi.object(
     {
-      username: Joi.string(),
       email: generalSchema.email,
       password: generalSchema.password
     }
-  ).xor("username","email").required()
+  ).required()
 };
 
 

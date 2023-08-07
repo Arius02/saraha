@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import { usersModel } from "../../../DB/models/users.models.js"
 import { errorHandler } from "../../utils/errorHandling.js";
 import jwt from "jsonwebtoken";
-// import confirmMessage from "../../services/confirmMessage.js";
 import { sendEmail } from "../../services/sendingMail.js";
 import { message } from "../../utils/confirmationMessage.js";
 import cloudinary from "../../utils/cloudinaryConfiguration.js";
@@ -69,19 +68,13 @@ const confirmEmail = errorHandler( async (req, res, next) => {
 // sign in 
 const signIn = errorHandler(async (req, res, next) => {
   
-    let user;
-    const { email, password, username } = req.body
-    if(email){
-       user = await usersModel.findOneAndUpdate({email},{
-        isLogged:true
-      }) 
-    } else {
-       user = await usersModel.findOneAndUpdate({ username }, {
-        isLogged: true
-      }) 
-    }
+  const { email, password } = req.body
+    const user = await usersModel.findOne({email}) 
+    
     if (user && bcrypt.compareSync(password,user.password)){
       const token = jwt.sign({ ...user }, process.env.TOKEN_SECRET_KEY, { expiresIn: "240h"})
+      user.isLogged =true 
+      await user.save()
       res.status(200).json({message:"user logged successfully.",status:true, token:token})
     } else {
       // Return an error response if user not found or password is incorrect
