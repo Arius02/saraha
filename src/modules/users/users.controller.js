@@ -66,13 +66,13 @@ const confirmEmail = errorHandler( async (req, res, next) => {
 });
 
 // sign in 
-const signIn = errorHandler(async (req, res, next) => {
+const signIn = (async (req, res, next) => {
   
   const { email, password } = req.body
     const user = await usersModel.findOne({email}) 
     
     if (user && bcrypt.compareSync(password,user.password)){
-      const token = jwt.sign({ ...user }, process.env.TOKEN_SECRET_KEY, { expiresIn: "240h"})
+      const token = jwt.sign( {_id:user._id}, process.env.TOKEN_SECRET_KEY, { expiresIn: "240h"})
       user.isLogged =true 
       await user.save()
       res.status(200).json({message:"user logged successfully.",status:true, token:token})
@@ -182,18 +182,23 @@ const deleteUser = errorHandler(async(req, res, next)=>{
     return res.status(200).json({ message: 'User deleted successfully.' , status:true });
 })
 
-
 //logout
 const logOut = errorHandler(async (req, res, next) => {
   const { email } = req.userData
   const user= await usersModel.findOneAndUpdate({ email }, {
     isLogged: false
   })
-console.log(user)
   return res.status(200).json({ message: "user log out successfully." , status:true})
 });
 
-
+const getUser = errorHandler(async (req, res, next) => {
+  const { _id } = req.params
+  const user = await usersModel.findById(_id)
+  if(!user){
+    return res.status(404).json({message:"User is  not exist.", status:false})
+  }
+  return res.status(200).json({user})
+});
 export {
   signUp, 
   signIn,
@@ -202,4 +207,5 @@ export {
   logOut,
   confirmEmail,
   changePassword,
+  getUser
 }
