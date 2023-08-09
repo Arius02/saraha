@@ -66,7 +66,7 @@ const confirmEmail = errorHandler( async (req, res, next) => {
 });
 
 // sign in 
-const signIn = (async (req, res, next) => {
+const signIn = errorHandler(async (req, res, next) => {
   
   const { email, password } = req.body
     const user = await usersModel.findOne({email}) 
