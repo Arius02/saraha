@@ -7,7 +7,6 @@ import { message } from "../../utils/confirmationMessage.js";
 import cloudinary from "../../utils/cloudinaryConfiguration.js";
 
 const signUp = errorHandler(async (req, res, next) => {
-  console.log(req.body,req.file)
   // Extract password, confirmPassword, and other user data from the request body
   const { password, cPassword, email ,username} = req.body;
   // Hash the password using the specified salt rounds

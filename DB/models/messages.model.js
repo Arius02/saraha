@@ -10,12 +10,15 @@ const messageSchema = new Schema({
   sentFrom: {
     type: String,
     ref: "user",
-    required: true
   },
   sendTo: {
     type: mongoose.Types.ObjectId,
     ref: "user",
     required: true
+  },
+  isFav:{
+    type:Boolean,
+    default:false
   }
 },{
   timestamps: true

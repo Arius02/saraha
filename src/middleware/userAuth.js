@@ -5,14 +5,13 @@ import getToken from '../utils/barrerToken.js';
 
 // Middleware for authentication
 export const userAuth = async (req, res, next) => {
-  // try {
+  try {
     const bearerToken = req.header('token');
     // Extract the isBearer flag and token using the getToken utility function
     const { isBearer, token } = getToken(bearerToken);
 
     // Verify the token and decode the user
   const decoded = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
-  console.log(decoded)
     const user = await usersModel.findById(decoded._id) 
     // Check if the token is in the correct format
     if (!isBearer) {
@@ -34,9 +33,9 @@ export const userAuth = async (req, res, next) => {
       req.token = token
       next();
    }
-  // } catch (error) {
-  //   // Return any verification errors as a response
-  //   return res.status(401).json({ message: 'Invalid or expired token.', status: false ,error});
-  // }
+  } catch (error) {
+    // Return any verification errors as a response
+    return res.status(401).json({ message: 'Invalid or expired token.', status: false ,error});
+  }
 };
 

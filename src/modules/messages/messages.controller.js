@@ -5,17 +5,24 @@ import { usersModel } from "../../../DB/models/users.models.js";
 
 //send message
 const sendMessage = errorHandler(async (req, res, next) => {
-  const { _id } = req.userData
+  const { sentFrom } = req.body
   const {username} = req.params
-  console.log(username)
   const user = await usersModel.findOne({username})
+  let message;
   if(!user){
    next(new Error("User not found.", {cause:404}))
   }
-  const message = await messgesModel.create({ ...req.body, 
-    sentFrom: _id , 
-    sendTo: user._id
-  })
+  if(sentFrom){
+     message = await messgesModel.create({ ...req.body, 
+      sentFrom , 
+      sendTo: user._id
+    })
+  }else{
+     message = await messgesModel.create({ ...req.body, 
+      sentFrom: _id , 
+      sendTo: user._id
+    })
+  }
   return res.status(201).json({ message: "message added successfully.", status: true, message })
 });
 
@@ -39,18 +46,24 @@ const deleteMessage = errorHandler(async (req, res, next) => {
 //get messages
 const getAllMessage= errorHandler(async (req, res) => {
   const {_id}= req.userData;
-
+  const user = await usersModel.findById(_id)
     messgesModel.find({
       $or:[
         {sentFrom: _id },
         {sendTo:_id}
       ]
     }).then((messages) => {
-      res.status(200).json({count:messages.length, messages})
-    }).catch((err)=> res.status(400).json({error:err}))
+      const messageAndFav =[...messages]
+       messageAndFav.forEach(message=>{
+        if(user.myFav.includes(message._id)){
+          message.isFav= true
+        }
+      })
+      res.status(200).json({count:messages.length, messageAndFav})
+    })
 });
 
-const addToFav= errorHandler(async(req,res,next)=>{
+const favToggle= errorHandler(async(req,res,next)=>{
   const {_id}= req.params;
   const user = await usersModel.findById(req.userData._id);
 
@@ -84,5 +97,4 @@ export {
   sendMessage,
   deleteMessage,
   getAllMessage,
-  addToFav
-}
+  favToggle}

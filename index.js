@@ -6,7 +6,7 @@ import messageRouter from './src/modules/messages/messages.routes.js'
 import cors from "cors"
 
 const app = express()
-const port = process.env.PORT || 3090;
+const port = process.env.PORT || 3000;
 
 dotenv.config()
 connectionDB()

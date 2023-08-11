@@ -14,11 +14,10 @@ export const sendMessageSchema = {
       content: Joi.string()
         .min(3)
         .max(300)
-        .required()
-      ,
-      sendTo: Joi.string()
-        .length(24)
         .required(),
+        sentFrom: Joi.string()
+        .length(24)
+        .optional()
     }
   ),
 }
@@ -26,7 +25,7 @@ export const deleteSchema = {
   params: generalSchema.params.required()
 }
 
-export const addToFavSchema ={
+export const favToggleSchema ={
     params:generalSchema.params.required()
 
 }
