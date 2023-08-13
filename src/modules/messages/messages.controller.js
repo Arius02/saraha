@@ -57,6 +57,8 @@ const getAllMessage= errorHandler(async (req, res) => {
        messageAndFav.forEach(message=>{
         if(user.myFav.includes(message._id)){
           message.isFav= true
+        }else {
+          message.isFav= false
         }
       })
       res.status(200).json({count:messages.length, messageAndFav})
