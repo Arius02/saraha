@@ -4,7 +4,7 @@ import { usersModel } from "../../../DB/models/users.models.js";
 
 
 //send message
-const sendMessage = errorHandler(async (req, res, next) => {
+const sendMessage = (async (req, res, next) => {
   const { sentFrom } = req.body
   const {username} = req.params
   const user = await usersModel.findOne({username})
@@ -19,7 +19,7 @@ const sendMessage = errorHandler(async (req, res, next) => {
     })
   }else{
      message = await messgesModel.create({ ...req.body, 
-      sentFrom: _id , 
+      sentFrom , 
       sendTo: user._id
     })
   }
