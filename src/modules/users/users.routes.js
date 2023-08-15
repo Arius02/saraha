@@ -12,7 +12,7 @@ router.patch("/confirmEmail/:token", confirmEmail)
 router.patch("/sign-in", validationGate(signInSchema),signIn)
 router.get("/:param", getUser)
 router.patch("/change-password",userAuth , validationGate(changePassSchema),changePassword)
-router.put("/", userAuth , upload(extensions.image).single("profile-picture") ,validationGate(updateSchema),updateUser)
+router.put("/", userAuth , upload(extensions.image).single("profilePicture") ,validationGate(updateSchema),updateUser)
 router.delete("/", userAuth,deleteUser)
 router.patch("/logout", userAuth, logOut)
 
