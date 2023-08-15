@@ -14,7 +14,6 @@ export const sendMessageSchema = {
       content: Joi.string()
         .min(3)
         .max(300)
-        .required(),
         sentFrom: Joi.string()
         .length(24)
         .optional()
